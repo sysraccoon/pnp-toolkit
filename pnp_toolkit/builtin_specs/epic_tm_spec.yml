@@ -1,0 +1,230 @@
+variables:
+  card_path: Cards - 6,35 x 8,90
+  vertical_standard_cards: 63*88.5mm
+  horizontal_standard_cards: 88.5*63mm
+  mission_cards: 70*70mm
+  award_and_milestone_cards: 45*25mm
+  population_tiles: 45*25mm
+  party_bonuses: 50*30mm
+  tablet_size: 440*268mm
+  turn_orders: 39.96*39.96mm
+  colonies: 106.5*60.5mm
+  tiles: 38.52*38.52mm
+
+paper_specs:
+  tablet_paper:
+    size: 445*273mm
+    offsets: 0*0mm
+    special: True
+
+paper_used: 
+  - "A4"
+  - "tablet_paper"
+
+src_groups:
+  all: ["EPIC*"]
+  asteroids: ["EPIC Asteroids"]
+  ares: ["EPIC Ares"]
+  basic_contents: ["EPIC Basic Contents"]
+  colonies: ["EPIC Colonies"]
+  blake: ["EPIC Blake"]
+  changed_contents: ["EPIC Changed Contents"]
+  chemical: ["EPIC Chemical"]
+  corporate_betterment: ["EPIC Corporate Betterment"]
+  corporations: ["EPIC Corporations"]
+  crises: ["EPIC Crises"]
+  early_bases: ["EPIC Early Bases"]
+  ides_of_mars: ["EPIC Ides of Mars"]
+  industries: ["EPIC Industries"]
+  infrastructures: ["EPIC Infrastructures"]
+  infrastructure_stickers: ["infrastructure_stickers"]
+  jim_burr: ["EPIC Jim Burr"]
+  kunst: ["EPIC Kunst"]
+  mercury: ["EPIC Mercury"]
+  milestones_and_awards: ["EPIC Milestones&Awards"]
+  new_home: ["EPIC New Home"]
+  new_ideas: ["EPIC New Ideas"]
+  nuclear: ["EPIC Nuclear"]
+  pathfinders: ["EPIC Pathfinders"]
+  political_agenda: ["EPIC Political Agenda"]
+  population_and_factions: ["EPIC Population & Factions"]
+  postludes: ["EPIC Postludes"]
+  rob_antilles: ["EPIC Rob Antilles"]
+  selfmade_cards: ["EPIC Selfmade Cards"]
+  silesia: ["EPIC Silesia"]
+  solaris: ["EPIC Solaris"]
+  the_moon: ["EPIC The Moon"]
+  tim_emerick: ["EPIC Tim Emerick"]
+  undercover: ["EPIC Undercover"]
+  various_projects: ["EPIC Various Projects"]
+  venus_2.0: ["EPIC Venus 2.0"]
+
+layout_specs:
+  references:
+    size: "{{vertical_standard_cards}}"
+    src_pathes:
+      - "{{card_path}}/Reference*.png"
+  tag_boards:
+    size: "129.96*160.02mm"
+    src_pathes:
+      - "Accessories/Tag board*.png"
+  turn_orders:
+    size: "{{turn_orders}}"
+    src_pathes:
+      - "Accessories/Turn Order*.png"
+  projects:
+    size: "{{vertical_standard_cards}}"
+    src_pathes:
+      - "{{card_path}}/Projects*/*.png"
+    background_pattern: "{{card_path}}/Project back.png"
+  preludes:
+    size: "{{horizontal_standard_cards}}"
+    src_pathes:
+      - "{{card_path}}/Preludes*/*.png"
+    background_pattern: "{{card_path}}/Prelude back.png"
+  corporations:
+    size: "{{horizontal_standard_cards}}"
+    src_pathes:
+      - "{{card_path}}/Corporations*/*.png"
+    background_pattern: "{{card_path}}/Corporation back.png"
+  colonies:
+    size: "{{colonies}}"
+    src_pathes:
+      - "Colonies*/*.png"
+  crises:
+    size: "{{vertical_standard_cards}}"
+    src_pathes:
+      - "{{card_path}}/Crises*/*.png"
+    background_pattern: "{{card_path}}/Global Event back.jpg"
+  silesia:
+    size: "{{tablet_size}}"
+    src_pathes:
+      - "EPIC Silesia.png"
+    special_paper_used: ["tablet_paper"]
+  undercover_epic:
+    size: "{{tablet_size}}"
+    src_pathes:
+      - "Undercover board - epic*"
+    special_paper_used: ["tablet_paper"]
+  undercover_standard:
+    size: "{{tablet_size}}"
+    src_pathes:
+      - "Undercover board - epic*"
+    special_paper_used: ["tablet_paper"]
+  infrastructures:
+    size: "{{vertical_standard_cards}}"
+    src_pathes:
+      - "{{card_path}}/Infrastructures*/*.png"
+    background_pattern: "{{card_path}}/Infrastructures back.png"
+    multiple_copies:
+      - ["/asteroid mine", 7]
+      - ["/asteroid outpost", 6]
+      - ["/auto factory", 5]
+      - ["/comsat", 7]
+      - ["/freighter", 7]
+      - ["/hydroponics", 5]
+      - ["/navigational beacon", 7]
+      - ["/observatory", 5]
+      - ["/orbital headquarters", 5]
+      - ["/orbital shipyard", 5]
+      - ["/powersat", 6]
+      - ["/probe", 7]
+      - ["/propellant depot", 5]
+      - ["/salvage depot", 5]
+      - ["/science facility", 5]
+      - ["/space habitat", 6]
+      - ["/space trading station", 7]
+      - ["/weather satellite", 6]
+  infrastructure_stickers:
+    size: "10*4.23mm"
+    src_pathes:
+      - "stickers/*.png"
+    multiple_copies:
+      - ["/.*.png", 9]
+  acts:
+    size: "{{horizontal_standard_cards}}"
+    src_pathes:
+      - "{{card_path}}/*Acts*/*.png"
+    background_pattern: "{{card_path}}/Acts back.png"
+  yellow:
+    size: "{{vertical_standard_cards}}"
+    src_pathes:
+      - "{{card_path}}/Yellow*/*.png"
+    background_pattern: "{{card_path}}/Project back.png"
+  global:
+    size: "{{vertical_standard_cards}}"
+    src_pathes:
+      - "{{card_path}}/*Global Events*/*.png"
+    background_pattern: "{{card_path}}/Global Event back.jpg"
+  factions:
+    size: "{{horizontal_standard_cards}}"
+    src_pathes:
+      - "{{card_path}}/Factions*/*.png"
+    background_pattern: "{{card_path}}/Factions  back.png"
+  population_tiles:
+    size: "{{population_tiles}}"
+    src_pathes:
+      - "Population tiles*/*.png"
+  postludes:
+    size: "{{vertical_standard_cards}}"
+    src_pathes:
+      - "{{card_path}}/Cards*/*.png"
+    background_pattern: "{{card_path}}/Postlude back.png"
+  party:
+    size: "{{horizontal_standard_cards}}"
+    src_pathes:
+      - "{{card_path}}/Party*/*.png"
+    background_pattern: "{{card_path}}/Parties back.png"
+  party_bonus_fronts:
+    size: "{{party_bonuses}}"
+    src_pathes:
+      - "Party Bonus*/*a.png"
+  party_bonus_backs:
+    size: "{{party_bonuses}}"
+    src_pathes:
+      - "Party Bonus*/*b.png"
+    mirror: True
+  missions:
+    size: "{{mission_cards}}"
+    src_pathes:
+      - Cards - 7 x 7/Missions*/*.png
+    background_pattern: Cards - 7 x 7/Mission back.png
+  tile_fronts:
+    size: "{{tiles}}"
+    src_pathes:
+      - Tiles*/*2.png
+      - Tiles*/*front.png
+      - Basic tiles*/*2.png
+    multiple_copies: &tile_copies
+      - ["/lunar road", 12]
+      - ["/lunar mine.\\.png", 12]
+      - ["/lunar mine urbanization", 8]
+      - ["/lunar habitat", 12]
+      - ["/city.\\.png", 6]
+      - ["/dome.\\.png", 12]
+      - ["/greenery.\\.png", 6]
+      - ["/wilderness.\\.png", 12]
+      - ["/floating array.\\.png", 12]
+      - ["/gas mine.\\.png", 12]
+      - ["/venus habitat.\\.png", 10]
+  tile_backs:
+    size: "{{tiles}}"
+    src_pathes:
+      - Tiles*/*1.png
+      - Tiles*/*back.png
+      - Basic tiles*/*1.png
+    multiple_copies: *tile_copies
+    mirror: True
+  ocean_tiles:
+    size: "{{tiles}}"
+    src_pathes:
+      - Oceans tiles*/ocean*front*.png
+    background_pattern: "Oceans tiles*/ocean*back.png"
+    background_border: False
+    multiple_copies:
+      - ["ocean front-22\\+", 6]
+  awards_and_milestones:
+    size: "{{award_and_milestone_cards}}"
+    src_pathes:
+      - Awards*/*.jpg
+      - Milestones*/*.jpg
