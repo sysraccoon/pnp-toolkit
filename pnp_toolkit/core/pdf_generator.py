@@ -107,7 +107,7 @@ def draw_crosses(canvas: report_canvas.Canvas, combined_layout: CombinedLayout):
     cols, rows = combined_layout.image_nup
     for col in range(cols + 1):
         for row in range(rows + 1):
-            coordinate = xy_to_mm_coordinates(combined_layout, col - 1, row - 1)
+            coordinate = xy_to_mm_coordinates(combined_layout, col, row - 1)
             x, y = coordinate
             _draw_cross(canvas, x, y)
 
