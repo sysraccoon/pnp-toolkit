@@ -13,7 +13,7 @@ import re
 
 def chunks(seq: typing.List[typing.Any], n: int):
     for i in range(0, len(seq), n):
-        yield seq[i:i + n]
+        yield seq[i : i + n]
 
 
 def mkdir(path: str):
@@ -36,7 +36,7 @@ def join_pathes(*pathes) -> str:
     result_path = ""
     for path in pathes:
         result_path += path.rstrip("/") + "/"
-    
+
     return result_path.rstrip("/")
 
 

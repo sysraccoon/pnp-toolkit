@@ -3,7 +3,7 @@ import attr
 import re
 
 from pathlib import Path
-from typing import List, Dict, Tuple, Optional
+from typing import List, Dict, Tuple, Optional, Type
 
 from pnp_toolkit.core.structs import Size, PaperSpec, Offset
 from pnp_toolkit.core.measures import parse_pair_mm
@@ -25,7 +25,8 @@ DEFAULT_SRC_GROUPS = {
     "default": ["."],
 }
 
-DEFAULT_CARD_SIZE = "63*88mm" # mtg card size
+DEFAULT_CARD_SIZE = "63*88mm"  # mtg card size
+
 
 @attr.frozen
 class PDFBuildSpecification:
@@ -45,7 +46,7 @@ class PDFBuildSpecification:
         multiple_copies: List[Tuple[str, int]]
         mirror: bool
         special_paper_used: List[str]
-    
+
     variables: Dict[str, str]
     options: Options
     paper_specs: Dict[str, PaperSpec]
@@ -59,9 +60,15 @@ class PDFBuildSpecification:
 
         options = conf.get("options", {})
         parsed_options = cls.Options(
-            parallel = cls._resolve_variable(options.get("parallel", 1), variables, expected_type=int),
-            src_dir = cls._resolve_variable(options.get("src_dir", "."), variables, expected_type=str),
-            out_dir = cls._resolve_variable(options.get("out_dir", "./out"), variables, expected_type=str),
+            parallel=cls._resolve_variable(
+                options.get("parallel", 1), variables, expected_type=int
+            ),
+            src_dir=cls._resolve_variable(
+                options.get("src_dir", "."), variables, expected_type=str
+            ),
+            out_dir=cls._resolve_variable(
+                options.get("out_dir", "./out"), variables, expected_type=str
+            ),
         )
 
         custom_paper_specs = conf.get("paper_specs")
@@ -70,11 +77,22 @@ class PDFBuildSpecification:
         else:
             paper_specs = DEFAULT_PAPER_SPECS
         for paper_name, paper_spec in paper_specs.items():
-            offsets = cls._parse_size(paper_spec.get("offsets", DEFAULT_PAPER_OFFSET), variables)
+            offsets = cls._parse_size(
+                paper_spec.get("offsets", DEFAULT_PAPER_OFFSET), variables
+            )
             horizontal_offsets, vertical_offsets = offsets.width_mm, offsets.height_mm
             paper_size = cls._parse_size(paper_spec["size"], variables)
             special = cls._parse_bool(paper_spec.get("special", False), variables)
-            paper_specs[paper_name] = PaperSpec(paper_size, Offset(vertical_offsets, horizontal_offsets, vertical_offsets, horizontal_offsets), special)
+            paper_specs[paper_name] = PaperSpec(
+                paper_size,
+                Offset(
+                    vertical_offsets,
+                    horizontal_offsets,
+                    vertical_offsets,
+                    horizontal_offsets,
+                ),
+                special,
+            )
 
         paper_used = conf.get("paper_used", ["A4"])
 
@@ -86,46 +104,60 @@ class PDFBuildSpecification:
 
         layout_specs = {}
         for layout_name, layout_spec in conf["layout_specs"].items():
-            file_name = cls._resolve_variable(layout_spec.get("file_name", f"{layout_name}.pdf"), variables, expected_type=str)
-            size = cls._parse_size(layout_spec.get("size", DEFAULT_CARD_SIZE), variables)
+            file_name = cls._resolve_variable(
+                layout_spec.get("file_name", f"{layout_name}.pdf"),
+                variables,
+                expected_type=str,
+            )
+            size = cls._parse_size(
+                layout_spec.get("size", DEFAULT_CARD_SIZE), variables
+            )
             src_pathes = cls._parse_glob_pathes(layout_spec["src_pathes"], variables)
             multiple_copies = []
             raw_multiple_copies = layout_spec.get("multiple_copies", [])
             for copy_regex, copy_count in raw_multiple_copies:
                 resolved_regex = cls._resolve_variable(copy_regex, variables)
-                resolved_count = cls._resolve_variable(copy_count, variables, expected_type=int)
+                resolved_count = cls._resolve_variable(
+                    copy_count, variables, expected_type=int
+                )
                 multiple_copies.append((resolved_regex, resolved_count))
-            background_pattern = cls._resolve_variable(layout_spec.get("background_pattern", ""), variables)
-            background_border = cls._parse_bool(layout_spec.get("background_border", True), variables)
+            background_pattern = cls._resolve_variable(
+                layout_spec.get("background_pattern", ""), variables
+            )
+            background_border = cls._parse_bool(
+                layout_spec.get("background_border", True), variables
+            )
             mirror = cls._parse_bool(layout_spec.get("mirror", False), variables)
             special_paper_used = []
             for special_paper_name in layout_spec.get("special_paper_used", []):
-                special_paper_used.append(cls._resolve_variable(special_paper_name, variables))
+                special_paper_used.append(
+                    cls._resolve_variable(special_paper_name, variables)
+                )
 
             layout_specs[layout_name] = cls.LayoutSpec(
-                file_name = file_name,
-                size = size,
-                src_pathes = src_pathes,
-                background_pattern = background_pattern,
-                background_border = background_border,
-                multiple_copies = multiple_copies,
-                mirror = mirror,
-                special_paper_used = special_paper_used,
+                file_name=file_name,
+                size=size,
+                src_pathes=src_pathes,
+                background_pattern=background_pattern,
+                background_border=background_border,
+                multiple_copies=multiple_copies,
+                mirror=mirror,
+                special_paper_used=special_paper_used,
             )
 
         config = cls(
-            variables = variables,
-            options = parsed_options,
-            paper_specs = paper_specs,
-            paper_used = paper_used,
-            src_groups = src_groups,
-            layout_specs = layout_specs,
+            variables=variables,
+            options=parsed_options,
+            paper_specs=paper_specs,
+            paper_used=paper_used,
+            src_groups=src_groups,
+            layout_specs=layout_specs,
         )
 
         return config
-    
+
     @staticmethod
-    def _resolve_variable(value, variables, expected_type=str):
+    def _resolve_variable(value, variables, expected_type: Type = str):
         value = str(value)
         used_variables = re.findall(r"{{(\w+)}}", value)
         for used in used_variables:
@@ -140,7 +172,9 @@ class PDFBuildSpecification:
         parsed_pathes = []
         glob_pathes = glob_pathes or []
         for glob_path in glob_pathes:
-            resolved_glob_path = PDFBuildSpecification._resolve_variable(glob_path, variables)
+            resolved_glob_path = PDFBuildSpecification._resolve_variable(
+                glob_path, variables
+            )
             parsed_pathes.append(resolved_glob_path)
         return parsed_pathes
 

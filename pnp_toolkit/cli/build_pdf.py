@@ -3,7 +3,13 @@ from multiprocessing import Pool
 from pnp_toolkit.core.pdf_generator import generate_pdf
 
 from pnp_toolkit.core.structs import CombinedLayout
-from pnp_toolkit.core.utils import mkdir, join_pathes, path_combinations, resolve_glob_pathes, search_multiple_copies
+from pnp_toolkit.core.utils import (
+    mkdir,
+    join_pathes,
+    path_combinations,
+    resolve_glob_pathes,
+    search_multiple_copies,
+)
 from pnp_toolkit.core.spec import PDFBuildSpecification
 import os
 
@@ -30,7 +36,10 @@ def build_pdf(src_dir: str, out_dir: str, spec: PDFBuildSpecification):
             group_out_dir = join_pathes(paper_dir, group_name)
 
             for layout_name, layout_spec in layout_specs.items():
-                if paper_spec.special and paper_name not in layout_spec.special_paper_used:
+                if (
+                    paper_spec.special
+                    and paper_name not in layout_spec.special_paper_used
+                ):
                     # special paper, but layout not support it
                     continue
 
@@ -39,18 +48,26 @@ def build_pdf(src_dir: str, out_dir: str, spec: PDFBuildSpecification):
                     continue
 
                 pdf_path = join_pathes(group_out_dir, layout_spec.file_name)
-                layout_src = list(path_combinations(group_src_dir, layout_spec.src_pathes))
+                layout_src = list(
+                    path_combinations(group_src_dir, layout_spec.src_pathes)
+                )
                 resolved_image_pathes = resolve_glob_pathes(layout_src)
 
                 background_pattern = None
                 if layout_spec.background_pattern:
-                    background_pathes = list(path_combinations(group_src_dir, [layout_spec.background_pattern]))
+                    background_pathes = list(
+                        path_combinations(
+                            group_src_dir, [layout_spec.background_pattern]
+                        )
+                    )
                     background_resolved_pathes = resolve_glob_pathes(background_pathes)
                     if background_resolved_pathes:
                         background_pattern = background_resolved_pathes[0]
 
                 resolved_image_pathes.sort()
-                resolved_with_copy_count = search_multiple_copies(resolved_image_pathes, layout_spec.multiple_copies)
+                resolved_with_copy_count = search_multiple_copies(
+                    resolved_image_pathes, layout_spec.multiple_copies
+                )
 
                 if not len(resolved_with_copy_count):
                     continue
@@ -58,9 +75,15 @@ def build_pdf(src_dir: str, out_dir: str, spec: PDFBuildSpecification):
                 mkdir(group_out_dir)
 
                 combined_layout = CombinedLayout(paper_spec, layout_spec)
-                pool.apply_async(generate_pdf, 
-                    (pdf_path, resolved_with_copy_count, combined_layout, 
-                    background_pattern, f"{paper_name} | {group_name} | {layout_name}",)
+                pool.apply_async(
+                    generate_pdf,
+                    (
+                        pdf_path,
+                        resolved_with_copy_count,
+                        combined_layout,
+                        background_pattern,
+                        f"{paper_name} | {group_name} | {layout_name}",
+                    ),
                 )
 
     pool.close()

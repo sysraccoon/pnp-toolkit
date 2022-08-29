@@ -40,7 +40,9 @@ def _parse_raw_pair(measure_pair: str):
     DELIMITER = "*"
     splitted = measure_pair.split(DELIMITER)
     if len(splitted) != 2:
-        raise ValueError(f"Expected two measures delimited with ({DELIMITER}) character")
+        raise ValueError(
+            f"Expected two measures delimited with ({DELIMITER}) character"
+        )
 
     first_measure = _parse_raw_measure(splitted[0])
     second_measure = _parse_raw_measure(splitted[1])
@@ -66,7 +68,7 @@ def _resolve_unit(unit: typing.Optional[str]):
     if not unit:
         unit = DEFAULT_MEASURE
     return _UNIT_ALIASES.get(unit, unit)
-    
+
 
 _MEASURE_CONVERSATIONS = {
     "inches": 1.0,
@@ -86,7 +88,7 @@ def _convert_raw_measure_to_unit(value, base_unit, target_unit):
 
     if base_conversation_value is None:
         raise ValueError(f"unsupported base unit type ({base_unit})")
-    
+
     if target_unit_unaliased is None:
         raise ValueError(f"unsupported target unit type ({target_unit})")
 
