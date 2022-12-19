@@ -282,7 +282,9 @@ class SimpleGuillotinePackStrategy(PackStrategy):
 
             packed_page = PackedPage(size=paper_spec.size, items=packed_items)
             packed_pages.append(packed_page)
-            packed_pages.append(generate_back_page(packed_page, items_with_backs))
+            back_page = generate_back_page(packed_page, items_with_backs)
+            if len(back_page.items) != 0:
+                packed_pages.append(back_page)
 
         return PackedDocument(pages=packed_pages)
 

@@ -9,6 +9,7 @@ from PIL import Image, ImageOps
 
 from pnp_toolkit.core.binpack.input_types import SimplePaperSpec, Padding, Size, RollPaperSpec, PaperSpec, UnpackedItem
 from pnp_toolkit.core.binpack.strategy.base import PackStrategy
+from pnp_toolkit.core.binpack.strategy.roll_guillotine import RollGuillotinePackStrategy
 from pnp_toolkit.core.binpack.strategy.simple_guillotine import SimpleGuillotinePackStrategy
 from pnp_toolkit.core.measures import DistanceMeasure4D, DistanceMeasure2D, DistanceMeasure1D
 from pnp_toolkit.core.render.base import OutputRenderer
@@ -18,6 +19,7 @@ from pnp_toolkit.core.spec.base import BGSpecification, DocumentSpecification, P
     PackStrategySpecification, OutputRendererSpecification, ComponentSpecification, BackImageSpecification, MultiGlob
 from pnp_toolkit.core.spec.generic_parse import resolve_variable
 from pnp_toolkit.core.spec.yaml_parse import _resolve_multi_glob_variable
+
 
 BinPackFlow = namedtuple("BinPackFlow", ["items", "front_images", "back_images"])
 
@@ -52,31 +54,36 @@ class BuildPipeline:
 
     def _process_single(self, doc: DocumentSpecification, spec: BGSpecification, task_create_datetime: str):
         self.emit_process_status_changed(doc, 0.0, "prepare document for process")
+        try:
+            binpack_paper = self._convert_paper_spec_to_binpack_paper(doc.paper, spec)
+            binpack_strategy = self._convert_binpack_strategy(doc.pack_strategy, spec)
 
-        binpack_paper = self._convert_paper_spec_to_binpack_paper(doc.paper, spec)
-        binpack_strategy = self._convert_binpack_strategy(doc.pack_strategy, spec)
+            if type(binpack_paper) not in binpack_strategy.supported_paper():
+                raise ValueError(f"Selected strategy '{doc.pack_strategy.name}' not support paper type '{doc.paper.name}'")
 
-        if type(binpack_paper) not in binpack_strategy.supported_paper():
-            raise ValueError(f"Selected strategy '{doc.pack_strategy.name}' not support paper type '{doc.paper.name}'")
+            output_path = self._build_output_path(doc, spec, task_create_datetime)
+            output_renderer = self._convert_output_renderer(doc.output_renderer, output_path, spec)
 
-        output_path = self._build_output_path(doc, spec, task_create_datetime)
-        output_renderer = self._convert_output_renderer(doc.output_renderer, output_path, spec)
+            self.emit_process_status_changed(doc, 1/4, "prepare components for packing")
+            binpack_flow = self._convert_component_specs_to_binpack_flow(doc.components, doc, spec.variables)
 
-        self.emit_process_status_changed(doc, 1/4, "prepare components for packing")
-        binpack_flow = self._convert_component_specs_to_binpack_flow(doc.components, doc, spec.variables)
+            self.emit_process_status_changed(doc, 2/4, "pack components")
+            packed_document = binpack_strategy.pack(binpack_paper, binpack_flow.items)
 
-        self.emit_process_status_changed(doc, 2/4, "pack components")
-        packed_document = binpack_strategy.pack(binpack_paper, binpack_flow.items)
+            render_flow = RenderDocumentFlow(
+                packed_document=packed_document,
+                front_images=binpack_flow.front_images,
+                back_images=binpack_flow.back_images
+            )
 
-        render_flow = RenderDocumentFlow(
-            packed_document=packed_document,
-            front_images=binpack_flow.front_images,
-            back_images=binpack_flow.back_images
-        )
+            self.emit_process_status_changed(doc, 3/4, "render packed document")
+            output_renderer.render(render_flow)
+            self.emit_process_status_changed(doc, 4/4, "complete")
+        except Exception as e:
+            logging.exception(f"error")
+            self.emit_process_status_changed(doc, 0, f"err: {str(e)}")
+            raise e
 
-        self.emit_process_status_changed(doc, 3/4, "render packed document")
-        output_renderer.render(render_flow)
-        self.emit_process_status_changed(doc, 4/4, "complete")
 
     @staticmethod
     def _convert_component_specs_to_binpack_flow(component_item: List[ComponentSpecification], doc: DocumentSpecification, variables: dict) -> BinPackFlow:
@@ -167,6 +174,10 @@ class BuildPipeline:
         if strategy_spec.name == "simple_guillotine":
             rotation = params.get("rotation", False)
             return SimpleGuillotinePackStrategy(rotation=rotation)
+
+        if strategy_spec.name == "roll_guillotine":
+            # rotation = params.get("rotation", False)
+            return RollGuillotinePackStrategy()
 
         raise ValueError(f"Unsupported pack_strategy type '{strategy_spec.name}'")
 

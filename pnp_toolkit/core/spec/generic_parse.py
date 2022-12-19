@@ -106,7 +106,11 @@ def _get_builtin_pack_strategies():
             params={
                 "rotation": True,
             },
-        )
+        ),
+        "roll_guillotine": PackStrategySpecification(
+            name="roll_guillotine",
+            params={},
+        ),
     }
 
 
